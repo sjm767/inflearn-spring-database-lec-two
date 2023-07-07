@@ -6,11 +6,15 @@ import hello.itemservice.repository.ItemUpdateDto;
 import hello.itemservice.repository.memory.MemoryItemRepository;
 import java.util.Arrays;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,12 +24,25 @@ class ItemRepositoryTest {
     @Autowired
     ItemRepository itemRepository;
 
+    @Autowired
+    PlatformTransactionManager txManager;
+
+    TransactionStatus status;
+
+    @BeforeEach
+    void beforeEach(){
+        //트랜잭션 시작
+        status = txManager.getTransaction(new DefaultTransactionAttribute());
+    }
+
     @AfterEach
     void afterEach() {
         //MemoryItemRepository 의 경우 제한적으로 사용
         if (itemRepository instanceof MemoryItemRepository) {
             ((MemoryItemRepository) itemRepository).clearStore();
         }
+        //트랜잭션 롤백 
+        txManager.rollback(status);
     }
 
     @Test
