@@ -14,16 +14,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional
 @SpringBootTest
 class ItemRepositoryTest {
 
     @Autowired
     ItemRepository itemRepository;
 
+    /*
     @Autowired
     PlatformTransactionManager txManager;
 
@@ -33,7 +36,7 @@ class ItemRepositoryTest {
     void beforeEach(){
         //트랜잭션 시작
         status = txManager.getTransaction(new DefaultTransactionAttribute());
-    }
+    }*/
 
     @AfterEach
     void afterEach() {
@@ -41,8 +44,8 @@ class ItemRepositoryTest {
         if (itemRepository instanceof MemoryItemRepository) {
             ((MemoryItemRepository) itemRepository).clearStore();
         }
-        //트랜잭션 롤백 
-        txManager.rollback(status);
+//        //트랜잭션 롤백
+//        txManager.rollback(status);
     }
 
     @Test
